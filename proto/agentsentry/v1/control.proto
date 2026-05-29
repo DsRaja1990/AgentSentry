@@ -1,0 +1,73 @@
+syntax = "proto3";
+
+package agentsentry.v1;
+
+import "agentsentry/v1/common.proto";
+
+option go_package = "github.com/agentsentry/agentsentry/proto/agentsentry/v1;agentsentryv1";
+
+// ControlService is the human/SDK facing surface.
+// REST mappings live in control/internal/api.
+
+message Agent {
+  string id           = 1;
+  string project_id   = 2;
+  string name         = 3;
+  string framework    = 4;   // langchain | maf | bedrock-agentcore | …
+  string owner        = 5;
+  string identity_kind = 6;  // api_key | spiffe
+  string identity_ref = 7;
+  string created_at   = 8;
+}
+
+message Policy {
+  string id         = 1;
+  string project_id = 2;
+  string name       = 3;
+  string language   = 4;  // rego | cedar
+  string source     = 5;
+  uint32 version    = 6;
+  string status     = 7;  // draft | enforced | monitor | retired
+  string created_at = 8;
+}
+
+message ApiKey {
+  string id         = 1;
+  string tenant_id  = 2;
+  repeated string scopes = 3;
+  string created_at = 4;
+  string revoked_at = 5;
+  // raw key returned only on creation
+  string raw_key    = 6;
+}
+
+message TraceQuery {
+  string agent_id  = 1;
+  string since     = 2;   // RFC3339
+  string until     = 3;
+  string decision  = 4;   // allow | deny | approve | redact
+  uint32 limit     = 5;
+}
+
+service ControlService {
+  rpc ListAgents(Empty) returns (AgentList);
+  rpc CreateAgent(Agent) returns (Agent);
+
+  rpc ListPolicies(Empty) returns (PolicyList);
+  rpc UpsertPolicy(Policy) returns (Policy);
+  rpc PullPolicyBundle(Empty) returns (PolicyBundle);
+
+  rpc QueryTraces(TraceQuery) returns (SpanList);
+
+  rpc CreateApiKey(ApiKey) returns (ApiKey);
+}
+
+message Empty {}
+message AgentList   { repeated Agent  items = 1; }
+message PolicyList  { repeated Policy items = 1; }
+message SpanList    { repeated Span   items = 1; }
+
+message PolicyBundle {
+  uint64 version           = 1;
+  repeated Policy policies = 2;
+}

@@ -1,0 +1,22 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "agentsentry"
+version = "0.1.0"
+description = "AgentSentry Python SDK — instrument LangChain and OpenAI clients to flow through the AgentSentry gateway."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "Apache-2.0" }
+authors = [{ name = "AgentSentry contributors" }]
+dependencies = [
+    "httpx>=0.27",
+]
+
+[project.optional-dependencies]
+langchain = ["langchain-core>=0.3"]
+dev       = ["pytest>=8", "ruff>=0.5"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["agentsentry"]

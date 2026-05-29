@@ -1,0 +1,19 @@
+listen_addr: "0.0.0.0:8080"
+control_plane_url: "${SENTRY_GW_CONTROL_URL:-http://control:8081}"
+api_key: "${SENTRY_GW_API_KEY:-sk_dev_local_demo_key}"
+poll_interval_seconds: 10
+
+redact:
+  enable_pii:     true
+  enable_secrets: true
+
+upstreams:
+  openai:
+    base_url: "${SENTRY_GW_OPENAI_BASE_URL:-https://api.openai.com}"
+  anthropic:
+    base_url: "${SENTRY_GW_ANTHROPIC_BASE_URL:-https://api.anthropic.com}"
+  gemini:
+    base_url: "${SENTRY_GW_GEMINI_BASE_URL:-https://generativelanguage.googleapis.com}"
+  # Azure base must point at your resource, e.g. https://contoso-aoai.openai.azure.com
+  azure:
+    base_url: "${SENTRY_GW_AZURE_BASE_URL:-https://YOUR-RESOURCE.openai.azure.com}"

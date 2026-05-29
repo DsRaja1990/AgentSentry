@@ -1,0 +1,1 @@
+AgentSentry UI public assets

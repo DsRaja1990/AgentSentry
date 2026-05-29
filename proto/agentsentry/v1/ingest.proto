@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package agentsentry.v1;
+
+import "agentsentry/v1/common.proto";
+
+option go_package = "github.com/agentsentry/agentsentry/proto/agentsentry/v1;agentsentryv1";
+
+// IngestService receives spans from gateways and SDKs.
+// REST equivalent: POST /v1/ingest with { "spans": [Span...] }.
+service IngestService {
+  rpc IngestSpans(IngestSpansRequest) returns (IngestSpansResponse);
+}
+
+message IngestSpansRequest {
+  repeated Span spans = 1;
+}
+
+message IngestSpansResponse {
+  uint64 accepted = 1;
+  uint64 rejected = 2;
+}

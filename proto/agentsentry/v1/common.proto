@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+package agentsentry.v1;
+
+option go_package = "github.com/agentsentry/agentsentry/proto/agentsentry/v1;agentsentryv1";
+
+// Span is the canonical telemetry record for one agent action.
+// Schema follows OpenTelemetry GenAI semantic conventions with an
+// `agentsentry.*` extension namespace (carried in `attributes`).
+message Span {
+  string trace_id              = 1;
+  string span_id               = 2;
+  string parent_id             = 3;
+
+  string tenant_id             = 10;
+  string project_id            = 11;
+  string agent_id              = 12;
+
+  string ts                    = 20;  // RFC3339 UTC
+  uint64 duration_ms           = 21;
+
+  // kind ∈ { "llm", "tool", "mcp", "guardrail", "policy" }
+  string kind                  = 30;
+  string name                  = 31;
+  string model                 = 32;
+  string provider              = 33;
+
+  uint64 input_tokens          = 40;
+  uint64 output_tokens         = 41;
+  double cost_usd              = 42;
+
+  string tool_name             = 50;
+  string tool_args_redacted    = 51;
+  string tool_result_redacted  = 52;
+
+  // policy_decision ∈ { "allow", "deny", "approve", "redact" }
+  string policy_decision       = 60;
+  string policy_id             = 61;
+  string policy_reason         = 62;
+
+  repeated string guardrail_hits = 70;
+
+  map<string, string> attributes = 80;
+}
+
+message Redaction {
+  string path = 1;   // JSON pointer
+  string kind = 2;   // pii_email | secret | credit_card | …
+}
+
+message PolicyDecision {
+  bool allow                   = 1;
+  bool require_approval        = 2;
+  repeated Redaction redactions = 3;
+  string reason                = 4;
+  string policy_id             = 5;
+  repeated string obligations  = 6;
+}

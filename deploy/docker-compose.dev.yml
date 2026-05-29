@@ -1,0 +1,70 @@
+name: agentsentry-dev
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER:     sentry
+      POSTGRES_PASSWORD: sentry
+      POSTGRES_DB:       sentry
+    ports: ["5432:5432"]
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sentry"]
+      interval: 5s
+      timeout:  3s
+      retries:  20
+
+  clickhouse:
+    image: clickhouse/clickhouse-server:24.8-alpine
+    environment:
+      CLICKHOUSE_DB:                   sentry
+      CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: "1"
+    ports:
+      - "8123:8123"   # HTTP
+      - "9000:9000"   # native
+    volumes:
+      - chdata:/var/lib/clickhouse
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+
+  control:
+    build:
+      context: ../control
+    depends_on:
+      postgres:   { condition: service_healthy }
+      clickhouse: { condition: service_started }
+    environment:
+      POSTGRES_DSN:      "postgres://sentry:sentry@postgres:5432/sentry?sslmode=disable"
+      CLICKHOUSE_DSN:    "clickhouse://default:@clickhouse:9000/sentry"
+      SENTRY_DEV_API_KEY: "sk_dev_local_demo_key"
+      SENTRY_SEED_DEMO:  "true"
+    ports: ["8081:8081"]
+
+  gateway:
+    build:
+      context: ../gateway
+    depends_on:
+      control: { condition: service_started }
+    environment:
+      SENTRY_GW_CONTROL_URL: "http://control:8081"
+      SENTRY_GW_API_KEY:     "sk_dev_local_demo_key"
+      RUST_LOG:              "info"
+    ports: ["8080:8080"]
+
+  ui:
+    build:
+      context: ../ui
+    depends_on:
+      control: { condition: service_started }
+    environment:
+      CONTROL_API_URL: "http://control:8081"
+      CONTROL_API_KEY: "sk_dev_local_demo_key"
+    ports: ["3000:3000"]
+
+volumes:
+  pgdata:
+  chdata:

@@ -1,0 +1,55 @@
+# Rust
+target/
+**/*.rs.bk
+Cargo.lock
+
+# Go
+*.exe
+*.test
+*.out
+control/bin/
+
+# Node
+node_modules/
+.next/
+out/
+dist/
+.pnpm-store/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+
+# .NET
+bin/
+obj/
+*.user
+
+# Editor / OS
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+
+# Env / secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Installer-generated files
+.env.agentsentry
+gateway/config.generated.yaml
+control/config.generated.yaml
+deploy/docker-compose.generated.yml
+
+# Data
+data/
+*.db
+*.sqlite

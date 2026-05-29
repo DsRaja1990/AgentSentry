@@ -1,0 +1,15 @@
+[workspace]
+resolver = "2"
+members = ["crates/sentry-gateway"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "Apache-2.0"
+repository = "https://github.com/agentsentry/agentsentry"
+rust-version = "1.78"
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
+strip = true

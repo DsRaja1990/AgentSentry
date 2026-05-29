@@ -1,0 +1,5 @@
+listen_addr: ":8081"
+postgres_dsn: "postgres://sentry:sentry@postgres:5432/sentry?sslmode=disable"
+clickhouse_dsn: "clickhouse://default:@clickhouse:9000/sentry"
+dev_api_key: "sk_dev_local_demo_key"
+seed_demo_data: true
